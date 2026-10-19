@@ -1,1 +1,19 @@
-@import "tailwindcss";
+/* Layer order, declared once and first: layers are ordered by first appearance.
+   LunarCSS draws (theme, then its optional layout stylesheet), Tailwind places
+   and spaces, and the unlayered site rules at the bottom beat all of them. */
+@layer lunarcss, lunarcss-layout, theme, utilities;
+
+@import "@nikolaiwu/lunarcss/fonts";
+@import "@nikolaiwu/lunarcss";
+@import "@nikolaiwu/lunarcss/layout";
+@import "tailwindcss/utilities.css" layer(utilities);
+/* No tailwindcss/preflight.css: its reset would strip the theme's element styles.
+   No tailwindcss/theme.css: we define the only theme values we allow, below. */
+@import "./site.css";
+
+@theme inline {
+  --spacing: var(--lunar-space-1); /* p-4 = 4 × 0.25rem = --lunar-space-4 */
+  --breakpoint-md: 40rem;
+  --breakpoint-lg: 60rem;
+  --breakpoint-xl: 80rem;
+}

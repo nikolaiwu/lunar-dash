@@ -1,0 +1,30 @@
+/* Site rules. Unlayered, so they beat the theme, the layout stylesheet and the
+   utilities. Each rule says why the theme and a utility can't do it, and uses
+   only --lunar-* tokens (or --dash-* tokens built from them). */
+
+/* LunarCSS's layout stylesheet is loaded, but Tailwind lays out this app. Its
+   own tokens switch off what it would add to the shell: no utility sets
+   these, because they belong to the layout stylesheet's rules. */
+:root {
+  --lunar-page-width: none; /* the body's max width: the app is full width */
+  --lunar-page-gutter: 0; /* the body's padding: each region pads itself */
+  --lunar-layout-gap: 0; /* the margin under each region: the grid places them */
+}
+
+/* The shell's grid tracks, used by the root layout (layout.tsx) through
+   grid-cols-(…) and grid-rows-(…). A phone stacks header, sidebar, main and
+   footer; from lg the sidebar sits left of main. Both tracks change at the breakpoint, which as
+   responsive utilities would put six classes on <body>, over the class budget.
+   60rem is the lg breakpoint in globals.css. */
+:root {
+  --dash-sidebar-width: calc(var(--lunar-space-16) * 4);
+  --dash-shell-columns: minmax(0, 1fr);
+  --dash-shell-rows: auto auto 1fr auto;
+}
+
+@media (width >= 60rem) {
+  :root {
+    --dash-shell-columns: var(--dash-sidebar-width) minmax(0, 1fr);
+    --dash-shell-rows: auto 1fr auto;
+  }
+}
