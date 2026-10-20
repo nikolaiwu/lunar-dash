@@ -164,8 +164,11 @@ export function createFixtures(today: Date): Fixtures {
     if (random.next() < 0.08) {
       steps.push(["cancelled", placedAgo - 0.5]);
     } else {
-      const shippedAgo = placedAgo - 1 - random.next();
-      steps.push(["paid", placedAgo - 0.02]);
+      // Most pay at once, some days later, so the latest wait as pending
+      const paidAgo =
+        placedAgo - (random.next() < 0.6 ? 0.02 : 0.5 + 2 * random.next());
+      const shippedAgo = paidAgo - 1 - random.next();
+      steps.push(["paid", paidAgo]);
       steps.push(["shipped", shippedAgo]);
       steps.push(["delivered", shippedAgo - 2 - 2 * random.next()]);
     }

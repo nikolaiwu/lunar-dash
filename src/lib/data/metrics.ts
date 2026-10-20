@@ -95,6 +95,30 @@ export async function lowStock(threshold = 5): Promise<number> {
   return products.filter((product) => product.stock <= threshold).length;
 }
 
+export interface CustomerTotals {
+  orders: number;
+  // Cancelled orders left out
+  spent: number;
+  lastOrderAt: string | null;
+}
+
+// One customer's orders, what they've spent, and when they last ordered
+export async function customerTotals(
+  customerId: string,
+): Promise<CustomerTotals> {
+  const { orders } = await getData();
+  const theirs = orders.filter((order) => order.customerId === customerId);
+  return {
+    orders: theirs.length,
+    spent: theirs.filter(counted).reduce((sum, order) => sum + order.total, 0),
+    lastOrderAt:
+      theirs
+        .map((order) => order.placedAt)
+        .sort()
+        .at(-1) ?? null,
+  };
+}
+
 export interface ActivityEvent {
   at: string;
   orderId: string;

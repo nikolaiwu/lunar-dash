@@ -49,19 +49,25 @@ export interface Order {
 }
 
 // What every resource's list() takes: sort is a field name, with a leading
-// "-" for descending; filter matches fields exactly; q searches the
-// resource's text fields.
+// "-" for descending; filter matches fields exactly; range keeps values
+// from one to another, both included (dates as "2026-10-01" take in the
+// whole day); q searches the resource's text fields.
 export interface ListParams<T> {
   sort?: string;
   filter?: Partial<Record<keyof T, string>>;
+  range?: Partial<Record<keyof T, { from?: string; to?: string }>>;
   q?: string;
   page?: number;
   pageSize?: number;
 }
 
+// A page of items, and how it was cut: the page and sort actually used (an
+// unknown sort falls back to the default, a page past the end to the last)
 export interface ListResult<T> {
   items: T[];
   total: number;
   page: number;
   pageCount: number;
+  pageSize: number;
+  sort: string;
 }

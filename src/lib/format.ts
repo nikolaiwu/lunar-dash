@@ -22,6 +22,13 @@ const date = new Intl.DateTimeFormat(siteConfig.lang, {
   timeZone: "UTC",
 });
 
+const fullDate = new Intl.DateTimeFormat(siteConfig.lang, {
+  day: "numeric",
+  month: "short",
+  year: "numeric",
+  timeZone: "UTC",
+});
+
 const dateTime = new Intl.DateTimeFormat(siteConfig.lang, {
   day: "numeric",
   month: "short",
@@ -39,8 +46,9 @@ export function formatNumber(value: number) {
   return number.format(value);
 }
 
-export function formatDate(iso: string) {
-  return date.format(new Date(iso));
+// "12 Oct", or "12 Oct 2026" with year: true
+export function formatDate(iso: string, { year = false } = {}) {
+  return (year ? fullDate : date).format(new Date(iso));
 }
 
 export function formatDateTime(iso: string) {

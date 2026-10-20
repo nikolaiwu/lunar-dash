@@ -30,4 +30,4 @@ export const products = defineResource<Product>("products", {
 
 export * as metrics from "./metrics";
 export type * from "./types";
-export type { ActivityEvent, Totals } from "./metrics";
+export type { ActivityEvent, CustomerTotals, Totals } from "./metrics";

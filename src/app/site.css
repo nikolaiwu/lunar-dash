@@ -34,3 +34,11 @@
     minmax(min(100%, var(--dash-card-min-width)), 1fr)
   );
 }
+
+/* The width a field in a row of them (FilterForm, BulkActions) grows from,
+   through basis-(…): 12rem, which the spacing scale doesn't have. The
+   theme's controls are full width, so without it they'd shrink to nothing
+   or take a row each. */
+:root {
+  --dash-field-width: calc(var(--lunar-space-16) * 3);
+}

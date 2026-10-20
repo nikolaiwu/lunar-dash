@@ -20,14 +20,16 @@ export type Change =
       item: Record<string, unknown>;
       at: string;
     }
+  // One change can update or remove several items (a bulk action), so it
+  // takes one place in the cookie
   | {
       op: "update";
       resource: ResourceName;
-      id: string;
+      ids: string[];
       fields: Record<string, unknown>;
       at: string;
     }
-  | { op: "remove"; resource: ResourceName; id: string; at: string };
+  | { op: "remove"; resource: ResourceName; ids: string[]; at: string };
 
 const COOKIE = "lunar-dash-changes";
 const MAX_CHANGES = 30;
@@ -95,7 +97,8 @@ function parse(value: string | undefined): Change[] {
           ? typeof c.item === "object" &&
             c.item !== null &&
             typeof c.item.id === "string"
-          : typeof c.id === "string") &&
+          : Array.isArray(c.ids) &&
+            c.ids.every((id: unknown) => typeof id === "string")) &&
         (c.op !== "update" ||
           (typeof c.fields === "object" && c.fields !== null)),
     );
@@ -144,25 +147,27 @@ function apply(base: Fixtures, changes: Change[]): Fixtures {
       continue;
     }
 
-    const index = list.findIndex((item) => item.id === change.id);
-    if (index === -1) continue;
-    if (change.op === "remove") {
-      list.splice(index, 1);
-      continue;
-    }
+    for (const id of change.ids) {
+      const index = list.findIndex((item) => item.id === id);
+      if (index === -1) continue;
+      if (change.op === "remove") {
+        list.splice(index, 1);
+        continue;
+      }
 
-    const before = list[index];
-    const after: Record<string, unknown> = {
-      ...before,
-      ...clean(change.resource, change.fields),
-    };
-    if (change.resource === "orders" && after.status !== before.status) {
-      after.history = [
-        ...(before.history as unknown[]),
-        { status: after.status, at: change.at },
-      ];
+      const before = list[index];
+      const after: Record<string, unknown> = {
+        ...before,
+        ...clean(change.resource, change.fields),
+      };
+      if (change.resource === "orders" && after.status !== before.status) {
+        after.history = [
+          ...(before.history as unknown[]),
+          { status: after.status, at: change.at },
+        ];
+      }
+      list[index] = after;
     }
-    list[index] = after;
   }
 
   // Orders show their customer's current name

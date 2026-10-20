@@ -18,19 +18,37 @@ function compare(a: unknown, b: unknown) {
   return String(a).localeCompare(String(b));
 }
 
+// How far a value is past a range's bound: above 0 after it, 0 on it. Text
+// is cut to the bound's length, so a day takes in all of its times
+// ("2026-10-01T09:30…" is on "2026-10-01").
+function beyond(value: unknown, bound: string) {
+  if (typeof value === "number") return value - Number(bound);
+  const text = String(value).slice(0, bound.length);
+  return text < bound ? -1 : text > bound ? 1 : 0;
+}
+
 export function defineResource<T extends { id: string }>(
   name: ResourceName,
   { searchable, defaultSort, pageSize: defaultPageSize = 20 }: Options<T>,
 ) {
   const all = async () => (await getData())[name] as unknown as T[];
 
-  function select(items: T[], { filter, q }: ListParams<T>) {
+  function select(items: T[], { filter, range, q }: ListParams<T>) {
     let result = items;
     for (const [field, value] of Object.entries(filter ?? {})) {
       if (value === undefined || value === "") continue;
       result = result.filter(
         (item) => String(item[field as keyof T]) === value,
       );
+    }
+    for (const [field, bounds] of Object.entries(range ?? {})) {
+      const { from, to } = (bounds ?? {}) as { from?: string; to?: string };
+      result = result.filter((item) => {
+        const value = item[field as keyof T];
+        return (
+          (!from || beyond(value, from) >= 0) && (!to || beyond(value, to) <= 0)
+        );
+      });
     }
     const query = q?.trim().replace(/^#/, "").toLowerCase();
     if (query) {
@@ -67,6 +85,8 @@ export function defineResource<T extends { id: string }>(
         total: sorted.length,
         page,
         pageCount,
+        pageSize,
+        sort,
       };
     },
 
@@ -98,21 +118,25 @@ export function defineResource<T extends { id: string }>(
       return item;
     },
 
-    async update(id: string, fields: Partial<Omit<T, "id">>): Promise<void> {
+    // One id, or several at once (a bulk action)
+    async update(
+      id: string | string[],
+      fields: Partial<Omit<T, "id">>,
+    ): Promise<void> {
       await saveChange({
         op: "update",
         resource: name,
-        id,
+        ids: [id].flat(),
         fields,
         at: new Date().toISOString(),
       });
     },
 
-    async remove(id: string): Promise<void> {
+    async remove(id: string | string[]): Promise<void> {
       await saveChange({
         op: "remove",
         resource: name,
-        id,
+        ids: [id].flat(),
         at: new Date().toISOString(),
       });
     },
