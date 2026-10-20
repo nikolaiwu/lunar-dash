@@ -13,7 +13,8 @@ export const metadata: Metadata = {
 
 // The app shell: <body> with the header, the sidebar, the page and the footer
 // as its children. LunarCSS draws every region; the classes here only place
-// them, on a grid whose tracks are --dash-shell-* tokens in site.css.
+// them, on a grid whose tracks are --dash-shell-* tokens in site.css. A phone
+// stacks the four regions; from lg the sidebar sits left of main.
 //
 // LunarCSS's layout stylesheet is loaded too, and matches this markup (it has
 // its own sidebar grid for body > aside + main). Everything it would set here
@@ -24,7 +25,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang={siteConfig.lang}>
-      <body className="grid min-h-dvh grid-cols-(--dash-shell-columns) grid-rows-(--dash-shell-rows)">
+      <body className="grid min-h-dvh grid-cols-1 grid-rows-(--dash-shell-rows) lg:grid-cols-(--dash-shell-columns) lg:grid-rows-(--dash-shell-rows-lg)">
         <header className="col-span-full px-6 py-4">
           <Link href="/">{siteConfig.name}</Link>
         </header>

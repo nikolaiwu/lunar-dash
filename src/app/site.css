@@ -12,19 +12,25 @@
 }
 
 /* The shell's grid tracks, used by the root layout (layout.tsx) through
-   grid-cols-(…) and grid-rows-(…). A phone stacks header, sidebar, main and
-   footer; from lg the sidebar sits left of main. Both tracks change at the breakpoint, which as
-   responsive utilities would put six classes on <body>, over the class budget.
-   60rem is the lg breakpoint in globals.css. */
+   grid-rows-(…) and lg:grid-cols-(…), lg:grid-rows-(…): values the spacing
+   scale doesn't have. On a phone main's row grows, so the footer sits at the
+   bottom of a short page; from lg the sidebar and main share that row. */
 :root {
   --dash-sidebar-width: calc(var(--lunar-space-16) * 4);
-  --dash-shell-columns: minmax(0, 1fr);
   --dash-shell-rows: auto auto 1fr auto;
+  --dash-shell-columns: var(--dash-sidebar-width) minmax(0, 1fr);
+  --dash-shell-rows-lg: auto 1fr auto;
 }
 
-@media (width >= 60rem) {
-  :root {
-    --dash-shell-columns: var(--dash-sidebar-width) minmax(0, 1fr);
-    --dash-shell-rows: auto 1fr auto;
-  }
+/* The layout components' tracks (src/components), used through
+   grid-cols-(…): widths the spacing scale doesn't have. Split's side column
+   is 20rem; a card is at least 18rem, or the whole row on a phone. */
+:root {
+  --dash-split-columns: minmax(0, 1fr)
+    minmax(0, calc(var(--lunar-space-16) * 5));
+  --dash-card-min-width: calc(var(--lunar-space-16) * 4.5);
+  --dash-card-columns: repeat(
+    auto-fit,
+    minmax(min(100%, var(--dash-card-min-width)), 1fr)
+  );
 }

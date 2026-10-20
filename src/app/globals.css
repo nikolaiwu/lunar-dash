@@ -6,11 +6,14 @@
 @import "@nikolaiwu/lunarcss/fonts";
 @import "@nikolaiwu/lunarcss";
 @import "@nikolaiwu/lunarcss/layout";
-@import "tailwindcss/utilities.css" layer(utilities);
+@import "tailwindcss/utilities.css" layer(utilities) source("../");
 /* No tailwindcss/preflight.css: its reset would strip the theme's element styles.
-   No tailwindcss/theme.css: we define the only theme values we allow, below. */
+   No tailwindcss/theme.css: we define the only theme values we allow, below.
+   source("../") scans src/ only, so words in the docs don't become classes. */
 @import "./site.css";
 
+/* inline: utilities use var(--lunar-space-1) itself, so a theme token
+   changed anywhere in the page changes the spacing there too. */
 @theme inline {
   --spacing: var(--lunar-space-1); /* p-4 = 4 × 0.25rem = --lunar-space-4 */
   --breakpoint-md: 40rem;
