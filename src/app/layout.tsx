@@ -5,6 +5,12 @@ import { UserMenu } from "@/components/UserMenu";
 import { siteConfig } from "@/site.config";
 import "./globals.css";
 
+// Every page renders on the server for each request, in full, instead of
+// sending a prerendered shell that fills in with streamed content. The pages
+// read the demo's cookie (and the URL), and a streamed part only appears
+// through a script: with JavaScript off it would never show.
+export const instant = false;
+
 export const metadata: Metadata = {
   title: {
     default: siteConfig.name,
@@ -64,6 +70,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         </aside>
         <main className="p-6">{children}</main>
         <footer className="col-span-full px-6 py-4">
+          <small>
+            Demo data, invented. Your changes stay in this browser, until you
+            clear its cookies.
+          </small>
           <small>
             Built with{" "}
             <a href="https://github.com/nikolaiwu/lunar-dash">Lunar Dash</a> and{" "}

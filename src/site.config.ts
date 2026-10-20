@@ -16,6 +16,8 @@ export interface SiteConfig {
   // The language of the interface, as a BCP 47 tag (e.g. "en", "en-GB", "bg").
   // Sets <html lang>, which screen readers and search engines rely on.
   lang: string;
+  // The currency prices and revenue are shown in, as an ISO 4217 code.
+  currency: string;
   // The sidebar's main navigation, in order.
   nav: NavLink[];
   // Where the header's search form sends its query, as ?q=…
@@ -33,6 +35,7 @@ export const siteConfig: SiteConfig = {
   description:
     "Acme Robotics' back office: orders, customers and products. A Lunar Dash demo.",
   lang: "en",
+  currency: "EUR",
   nav: [
     { label: "Overview", href: "/" },
     { label: "Orders", href: "/orders" },
