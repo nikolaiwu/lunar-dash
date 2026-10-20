@@ -4,7 +4,8 @@
 
 export interface NavLink {
   label: string;
-  // A path inside the app, with a leading slash (e.g. "/orders").
+  // A path inside the app, with a leading slash (e.g. "/orders"). The link
+  // is marked current on this page and on every page below it.
   href: string;
 }
 
@@ -17,6 +18,8 @@ export interface SiteConfig {
   lang: string;
   // The sidebar's main navigation, in order.
   nav: NavLink[];
+  // Where the header's search form sends its query, as ?q=…
+  searchAction: string;
   // How many rows or cards each list shows per page.
   pageSize: {
     orders: number;
@@ -37,6 +40,7 @@ export const siteConfig: SiteConfig = {
     { label: "Products", href: "/products" },
     { label: "Settings", href: "/settings" },
   ],
+  searchAction: "/orders",
   pageSize: {
     orders: 20,
     customers: 20,
