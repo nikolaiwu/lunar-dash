@@ -29,10 +29,13 @@ export function ConfirmDialog({
     <dialog id={id} aria-labelledby={`${id}-title`}>
       <h2 id={`${id}-title`}>{title}</h2>
       {children}
-      <form action={action} className="flex flex-wrap gap-4">
+      <form action={action}>
         {Object.entries(values).map(([name, value]) => (
           <input key={name} type="hidden" name={name} value={value} />
         ))}
+        {/* The buttons in a div of their own, so LunarCSS joins the two into
+            a group and the hidden inputs before them don't count as part of
+            it (its group rules take any input as a neighbour) */}
         <div>
           <button type="submit">{confirm}</button>
           <button type="button" commandfor={id} command="close">

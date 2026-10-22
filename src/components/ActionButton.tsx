@@ -15,7 +15,11 @@ export function ActionButton({
       {Object.entries(values).map(([name, value]) => (
         <input key={name} type="hidden" name={name} value={value} />
       ))}
-      <button type="submit">{children}</button>
+      {/* In a div, so LunarCSS doesn't take the hidden inputs before it for
+          grouped controls and drop the button's bottom-left cut */}
+      <div>
+        <button type="submit">{children}</button>
+      </div>
     </form>
   );
 }

@@ -27,7 +27,12 @@ export function PageHeader({
           <h1>{title}</h1>
           {description && <p>{description}</p>}
         </div>
-        {actions && <div className="flex flex-wrap gap-4">{actions}</div>}
+        {/* Top-aligned: an action that's a form (ActionButton) keeps the
+            theme's margin below it, which would push it up against a bare
+            button */}
+        {actions && (
+          <div className="flex flex-wrap items-start gap-4">{actions}</div>
+        )}
       </Toolbar>
       {flash && <p role="status">{flash}</p>}
     </header>
