@@ -50,7 +50,7 @@ export default async function OrderPage({ params }: PageProps<"/orders/[id]">) {
           { label: "Orders", href: "/orders" },
           { label: `#${order.number}`, href: `/orders/${order.id}` },
         ]}
-        flash={flash}
+        flash={flash.message}
         actions={
           <>
             {next && (

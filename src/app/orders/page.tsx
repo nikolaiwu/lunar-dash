@@ -41,7 +41,7 @@ export default async function OrdersPage({
           { label: "Overview", href: "/" },
           { label: "Orders", href: "/orders" },
         ]}
-        flash={flash}
+        flash={flash.message}
       />
 
       <FilterForm resource={ordersResource} query={query} />

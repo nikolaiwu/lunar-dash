@@ -4,12 +4,13 @@
 // cancel one. Each checks the move is allowed, saves it, and redirects back
 // with a flash message, so a form works the same with JavaScript or without.
 //
-// Anyone who can reach the app can call these (they're POST endpoints). With
-// real sign-in, check the user first, in each one.
+// Anyone who can reach the app can call these (they're POST endpoints), so
+// each one checks for a signed-in user first.
 
 import { redirect } from "next/navigation";
 import { orders, type OrderStatus } from "@/lib/data";
 import { setFlash } from "@/lib/flash";
+import { requireUser } from "@/lib/session";
 import { canMove, statusLabel } from "@/resources/orders";
 
 // Where to go back to: a page under /orders, from the form, or the list
@@ -22,6 +23,11 @@ function back(formData: FormData) {
     : "/orders";
 }
 
+// Leave a flash message for the page
+function say(path: string, message: string) {
+  return setFlash(path, { message });
+}
+
 function done(status: OrderStatus) {
   return status === "cancelled"
     ? "cancelled"
@@ -29,6 +35,7 @@ function done(status: OrderStatus) {
 }
 
 export async function changeStatus(formData: FormData) {
+  await requireUser();
   const id = String(formData.get("id") ?? "");
   const status = String(formData.get("status") ?? "") as OrderStatus;
   const order = await orders.get(id);
@@ -36,23 +43,24 @@ export async function changeStatus(formData: FormData) {
 
   const path = `/orders/${order.id}`;
   if (!canMove(order.status, status)) {
-    await setFlash(
+    await say(
       path,
       `Order #${order.number} is ${statusLabel(order.status).toLowerCase()}, so it can't be ${done(status)}.`,
     );
     redirect(path);
   }
   await orders.update(order.id, { status });
-  await setFlash(path, `Order #${order.number} ${done(status)}.`);
+  await say(path, `Order #${order.number} ${done(status)}.`);
   redirect(path);
 }
 
 export async function changeStatuses(formData: FormData) {
+  await requireUser();
   const path = back(formData);
   const status = String(formData.get("status") ?? "") as OrderStatus;
   const ids = formData.getAll("ids").map(String);
   if (ids.length === 0) {
-    await setFlash(path, "Select one or more orders first.");
+    await say(path, "Select one or more orders first.");
     redirect(path);
   }
 
@@ -69,7 +77,7 @@ export async function changeStatuses(formData: FormData) {
 
   const skipped = selected.length - moving.length;
   const count = (n: number) => `${n} ${n === 1 ? "order" : "orders"}`;
-  await setFlash(
+  await say(
     path,
     [
       moving.length ? `${count(moving.length)} ${done(status)}.` : "",

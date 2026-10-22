@@ -193,6 +193,12 @@ export async function getData(): Promise<Data> {
   return { today, ...apply(fixtures, changes) };
 }
 
+// Forgets this visitor's changes: the data is the fixtures again. Only from
+// a Server Action. Demo only: there's nothing like it for a real database.
+export async function resetChanges() {
+  (await cookies()).delete(COOKIE);
+}
+
 // Records a change in this visitor's cookie. Only from a Server Action: a
 // page can't set cookies while it renders.
 export async function saveChange(change: Change) {

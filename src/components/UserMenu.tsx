@@ -1,13 +1,12 @@
 import Link from "next/link";
-import { getCurrentUser } from "@/lib/session";
+import type { User } from "@/lib/session";
+import { signOut } from "@/app/sign-in/actions";
 
 // The signed-in user's menu: a button that opens a popover, with the user's
 // name and email, a link to the settings and a sign-out button. The Popover
 // API opens and closes it (and closes it on Escape or a click outside), with
 // no JavaScript of ours.
-export async function UserMenu() {
-  const user = await getCurrentUser();
-
+export function UserMenu({ user }: { user: User }) {
   return (
     <>
       <button type="button" popoverTarget="user-menu">
@@ -24,8 +23,7 @@ export async function UserMenu() {
             <Link href="/settings">Settings</Link>
           </li>
         </ul>
-        {/* Becomes a Server Action that clears the session (0.6) */}
-        <form action="/sign-in">
+        <form action={signOut}>
           <button type="submit">Sign out</button>
         </form>
       </div>

@@ -42,3 +42,9 @@
 :root {
   --dash-field-width: calc(var(--lunar-space-16) * 3);
 }
+
+/* Narrow's column (src/components), through max-w-(…): 28rem, for a short
+   form on its own, such as signing in. */
+:root {
+  --dash-narrow-width: calc(var(--lunar-space-16) * 7);
+}

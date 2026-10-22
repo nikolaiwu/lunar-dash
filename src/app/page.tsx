@@ -14,9 +14,9 @@ import {
   formatNumber,
 } from "@/lib/format";
 import { orderStatuses } from "@/resources/orders";
+import { LOW_STOCK } from "@/resources/products";
 
 const DAYS = 30;
-const LOW_STOCK = 5;
 
 // The overview is the app's home page. It shares the root layout's segment, so
 // the layout's title template doesn't reach it: it keeps the default title,

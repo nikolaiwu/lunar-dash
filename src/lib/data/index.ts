@@ -29,5 +29,7 @@ export const products = defineResource<Product>("products", {
 });
 
 export * as metrics from "./metrics";
+// The demo's "reset demo data" (Settings). Goes with store.ts.
+export { resetChanges } from "./store";
 export type * from "./types";
 export type { ActivityEvent, CustomerTotals, Totals } from "./metrics";
