@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { EmptyState } from "@/components/EmptyState";
 import { BulkActions } from "@/components/BulkActions";
 import { DataTable } from "@/components/DataTable";
 import { FilterForm } from "@/components/FilterForm";
@@ -64,14 +64,15 @@ export default async function OrdersPage({
         select={{ form: BULK_FORM }}
         empty={
           isFiltered(query) ? (
-            <p>
-              No orders match.{" "}
-              <Link href={listHref("/orders", { sort: query.sort })}>
-                Show all orders
-              </Link>
-            </p>
+            <EmptyState
+              message="No orders match."
+              action={{
+                href: listHref("/orders", { sort: query.sort }),
+                label: "Show all orders",
+              }}
+            />
           ) : (
-            <p>No orders yet.</p>
+            <EmptyState message="No orders yet. They appear here as customers place them." />
           )
         }
       />

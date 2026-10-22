@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
 import { ActionButton } from "@/components/ActionButton";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { LineItems } from "@/components/LineItems";
+import { NotFound } from "@/components/NotFound";
 import { PageHeader } from "@/components/PageHeader";
 import { Split } from "@/components/Split";
 import { Timeline } from "@/components/Timeline";
@@ -27,7 +27,10 @@ export async function generateMetadata({
   params,
 }: PageProps<"/orders/[id]">): Promise<Metadata> {
   const order = await orders.get((await params).id);
-  return { title: order ? ordersResource.title(order) : "Order not found" };
+  // A missing order is a page that says so (below): not for indexing
+  return order
+    ? { title: ordersResource.title(order) }
+    : { title: "Order not found", robots: { index: false } };
 }
 
 export default async function OrderPage({ params }: PageProps<"/orders/[id]">) {
@@ -36,7 +39,17 @@ export default async function OrderPage({ params }: PageProps<"/orders/[id]">) {
     orders.get(id),
     getFlash(`/orders/${id}`),
   ]);
-  if (!order) notFound();
+  // Shown in the page, not with notFound(): Next renders a not-found page
+  // on the client, so without JavaScript it would be blank
+  if (!order) {
+    return (
+      <NotFound
+        title="No such order"
+        message="There's no order at this address. Check the link, or find it in the list."
+        back={{ href: "/orders", label: "Go to the orders" }}
+      />
+    );
+  }
 
   const title = ordersResource.title(order);
   const next = nextStatus(order.status);

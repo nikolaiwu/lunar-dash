@@ -1,6 +1,7 @@
 import { ActivityFeed } from "@/components/ActivityFeed";
 import { BarChart } from "@/components/BarChart";
 import { CardGrid } from "@/components/CardGrid";
+import { EmptyState } from "@/components/EmptyState";
 import { PageHeader } from "@/components/PageHeader";
 import { RecentOrders } from "@/components/RecentOrders";
 import { Split } from "@/components/Split";
@@ -72,19 +73,27 @@ export default async function OverviewPage() {
         <div>
           <section>
             <h2>Revenue per day</h2>
-            <BarChart
-              points={revenue.map((day) => ({
-                label: formatDate(day.date),
-                value: day.revenue,
-              }))}
-              format={(cents) => formatMoney(cents, { whole: true })}
-              summary={`Revenue per day over the last ${DAYS} days. Highest: ${formatMoney(best.revenue, { whole: true })} on ${formatDate(best.date)}.`}
-              caption={`${formatDate(revenue[0].date)} to ${formatDate(revenue[revenue.length - 1].date)}, cancelled orders left out`}
-            />
+            {best.revenue === 0 ? (
+              <EmptyState message={`No revenue in the last ${DAYS} days.`} />
+            ) : (
+              <BarChart
+                points={revenue.map((day) => ({
+                  label: formatDate(day.date),
+                  value: day.revenue,
+                }))}
+                format={(cents) => formatMoney(cents, { whole: true })}
+                summary={`Revenue per day over the last ${DAYS} days. Highest: ${formatMoney(best.revenue, { whole: true })} on ${formatDate(best.date)}.`}
+                caption={`${formatDate(revenue[0].date)} to ${formatDate(revenue[revenue.length - 1].date)}, cancelled orders left out`}
+              />
+            )}
           </section>
           <section>
             <h2>Recent orders</h2>
-            <RecentOrders orders={recent.items} />
+            {recent.items.length > 0 ? (
+              <RecentOrders orders={recent.items} />
+            ) : (
+              <EmptyState message="No orders yet." />
+            )}
           </section>
         </div>
         <div>
@@ -101,7 +110,11 @@ export default async function OverviewPage() {
           </section>
           <section>
             <h2>Activity</h2>
-            <ActivityFeed events={events} />
+            {events.length > 0 ? (
+              <ActivityFeed events={events} />
+            ) : (
+              <EmptyState message="Nothing has happened yet." />
+            )}
           </section>
         </div>
       </Split>

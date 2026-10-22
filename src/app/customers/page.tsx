@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { EmptyState } from "@/components/EmptyState";
 import { DataTable } from "@/components/DataTable";
 import { FilterForm } from "@/components/FilterForm";
 import { PageHeader } from "@/components/PageHeader";
@@ -43,14 +43,15 @@ export default async function CustomersPage({
         query={query}
         empty={
           isFiltered(query) ? (
-            <p>
-              No customers match.{" "}
-              <Link href={listHref("/customers", { sort: query.sort })}>
-                Show all customers
-              </Link>
-            </p>
+            <EmptyState
+              message="No customers match."
+              action={{
+                href: listHref("/customers", { sort: query.sort }),
+                label: "Show all customers",
+              }}
+            />
           ) : (
-            <p>No customers yet.</p>
+            <EmptyState message="No customers yet. They appear here with their first order." />
           )
         }
       />

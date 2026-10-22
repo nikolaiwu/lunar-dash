@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { CardGrid } from "@/components/CardGrid";
+import { EmptyState } from "@/components/EmptyState";
 import { FilterForm } from "@/components/FilterForm";
 import { PageHeader } from "@/components/PageHeader";
 import { Pagination } from "@/components/Pagination";
@@ -51,16 +52,18 @@ export default async function ProductsPage({
           ))}
         </CardGrid>
       ) : isFiltered(query) ? (
-        <p>
-          No products match.{" "}
-          <Link href={listHref("/products", { sort: query.sort })}>
-            Show all products
-          </Link>
-        </p>
+        <EmptyState
+          message="No products match."
+          action={{
+            href: listHref("/products", { sort: query.sort }),
+            label: "Show all products",
+          }}
+        />
       ) : (
-        <p>
-          No products yet. <Link href="/products/new">Add a product</Link>
-        </p>
+        <EmptyState
+          message="No products yet."
+          action={{ href: "/products/new", label: "Add a product" }}
+        />
       )}
 
       <Pagination

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
+import { NotFound } from "@/components/NotFound";
 import { PageHeader } from "@/components/PageHeader";
 import { ProductForm } from "@/components/ProductForm";
 import { products } from "@/lib/data";
@@ -16,9 +16,10 @@ export async function generateMetadata({
   params,
 }: PageProps<"/products/[id]">): Promise<Metadata> {
   const product = await products.get((await params).id);
-  return {
-    title: product ? productsResource.title(product) : "Product not found",
-  };
+  // A missing product is a page that says so (below): not for indexing
+  return product
+    ? { title: productsResource.title(product) }
+    : { title: "Product not found", robots: { index: false } };
 }
 
 export default async function ProductPage({
@@ -30,7 +31,17 @@ export default async function ProductPage({
     products.get(id),
     getFlash(path),
   ]);
-  if (!product) notFound();
+  // Shown in the page, not with notFound(): Next renders a not-found page
+  // on the client, so without JavaScript it would be blank
+  if (!product) {
+    return (
+      <NotFound
+        title="No such product"
+        message="There's no product at this address. It may have been deleted, or the link is wrong."
+        back={{ href: "/products", label: "Go to the products" }}
+      />
+    );
+  }
 
   return (
     <>

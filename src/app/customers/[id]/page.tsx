@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
 import { DataTable } from "@/components/DataTable";
+import { EmptyState } from "@/components/EmptyState";
+import { NotFound } from "@/components/NotFound";
 import { PageHeader } from "@/components/PageHeader";
 import { Pagination } from "@/components/Pagination";
 import { Split } from "@/components/Split";
@@ -18,9 +19,10 @@ export async function generateMetadata({
   params,
 }: PageProps<"/customers/[id]">): Promise<Metadata> {
   const customer = await customers.get((await params).id);
-  return {
-    title: customer ? customersResource.title(customer) : "Customer not found",
-  };
+  // A missing customer is a page that says so (below): not for indexing
+  return customer
+    ? { title: customersResource.title(customer) }
+    : { title: "Customer not found", robots: { index: false } };
 }
 
 export default async function CustomerPage({
@@ -40,7 +42,17 @@ export default async function CustomerPage({
       filter: { customerId: id },
     }),
   ]);
-  if (!customer) notFound();
+  // Shown in the page, not with notFound(): Next renders a not-found page
+  // on the client, so without JavaScript it would be blank
+  if (!customer) {
+    return (
+      <NotFound
+        title="No such customer"
+        message="There's no customer at this address. Check the link, or find it in the list."
+        back={{ href: "/customers", label: "Go to the customers" }}
+      />
+    );
+  }
 
   return (
     <>
@@ -64,7 +76,9 @@ export default async function CustomerPage({
               query={query}
               path={path}
               fields={["number", "placedAt", "status", "total"]}
-              empty={<p>{customer.name} hasn&apos;t ordered yet.</p>}
+              empty={
+                <EmptyState message={`${customer.name} hasn't ordered yet.`} />
+              }
             />
             <Pagination
               page={theirOrders.page}

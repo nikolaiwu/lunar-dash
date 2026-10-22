@@ -33,10 +33,12 @@ export function ConfirmDialog({
         {Object.entries(values).map(([name, value]) => (
           <input key={name} type="hidden" name={name} value={value} />
         ))}
-        <button type="submit">{confirm}</button>
-        <button type="button" commandfor={id} command="close">
-          {dismiss}
-        </button>
+        <div>
+          <button type="submit">{confirm}</button>
+          <button type="button" commandfor={id} command="close">
+            {dismiss}
+          </button>
+        </div>
       </form>
     </dialog>
   );
